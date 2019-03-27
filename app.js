@@ -8,9 +8,9 @@ const path = require('path');
 const port = 3001;
 
 const indexRouter = require('./routes/index');
+const authRouter = require('./routes/auth.js');
 
 const app = express();
-
 
 nunjucks.configure('views', {
   autoescape: true,
@@ -25,6 +25,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'static')));
 
 app.use('/', indexRouter);
+app.use('/auth', authRouter);
 
 app.listen(port, () => {
   // eslint-disable-next-line no-console
