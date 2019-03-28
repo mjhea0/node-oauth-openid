@@ -3,6 +3,7 @@ const uuidv4 = require('uuid/v4');
 
 const router = express.Router();
 
+// TODO: move to a db
 const clientList = [
   {
     id: 1,
@@ -11,6 +12,7 @@ const clientList = [
   },
 ];
 
+// TODO: move to a db
 const userList = [
   {
     id: 1,
@@ -19,7 +21,10 @@ const userList = [
   },
 ];
 
+// TODO: move to a db
 const authorizationCodeList = [];
+
+// TODO: move to a db
 const accessTokenList = [];
 
 const moment = require('moment');
@@ -72,31 +77,32 @@ router.get('/authorize/dialog', (req, res, next) => {
 // eslint-disable-next-line no-unused-vars
 router.post('/authorize/dialog', (req, res, next) => {
   const params = req.body;
+
   if (params.validate !== 'Yay') {
     return res.json(400, {
       error: 1,
       msg: 'Not authorized.',
     });
   }
+
   // (1) get redirect uri from the client info in db
   const userObj = userList.filter((user) => {
-    return parseInt(user.id) === parseInt(params.user)
+    return parseInt(user.id, 10) === parseInt(params.user, 10);
   })[0];
 
-  let redirectURI = null;
-  for (let i = 0; i < clientList.length; i++) {
-    if (parseInt(clientList[i].id) === parseInt(userObj.client)) {
-      redirectURI = clientList[i].redirect_uri;
-    }
-  }
+  const redirectURI = clientList.filter((client) => {
+    return parseInt(client.id, 10) === parseInt(userObj.client, 10);
+  })[0];
+
   if (!redirectURI) {
     return res.json(400, {
       error: 1,
-      msg: 'Not authorized.',
+      msg: 'Invalid',
     });
   }
+
   // (2) generate an authorization code
-  // npm install uuid
+  // TODO: if grant type is implicit, send back access token
   const authorizationCode = generateAuthorizationCode(userObj.id);
   authorizationCodeList.push(authorizationCode);
 
@@ -135,7 +141,7 @@ router.post('/token', (req, res, next) => {
   //  changing consumed to true, possibly add to a black list
 
   const userObj = userList.filter((user) => {
-    return parseInt(user.id) === parseInt(authorizationCodeObj.user);
+    return parseInt(user.id, 10) === parseInt(authorizationCodeObj.user, 10);
   })[0];
 
   if (!userObj) {
