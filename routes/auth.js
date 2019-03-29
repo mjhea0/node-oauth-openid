@@ -1,5 +1,8 @@
 const express = require('express');
 const uuidv4 = require('uuid/v4');
+const jwt = require('jsonwebtoken');
+
+const SECRET_KEY = 'change-me-in-production';
 
 const router = express.Router();
 
@@ -59,12 +62,18 @@ router.get('/authorize', (req, res, next) => {
     (3) Verify the client
     (4) Verify the user
     (5) Redirect user to the dialog endpoint
-    http://localhost:3001/auth/authorize/?grant=code&client=1&redirect=http://localhost:3003/callback&user=1
+    http://localhost:3001/auth/authorize/?grant=code&client=1&redirect=http://localhost:3003/callback&user=1&scope=openid
   */
   const params = req.query;
   // TODO: verify correct query params were sent
   // TODO: force the user to log in
   // TODO: verify client + redirect uri
+  if (!params.scope && params.scope !== 'openid') {
+    return res.json(400, {
+      error: 1,
+      msg: 'Invalid Scope.',
+    });
+  }
   return res.redirect(`/auth/authorize/dialog/?user=${params.user}`);
 });
 
@@ -92,7 +101,7 @@ router.post('/authorize/dialog', (req, res, next) => {
 
   const redirectURI = clientList.filter((client) => {
     return parseInt(client.id, 10) === parseInt(userObj.client, 10);
-  })[0];
+  })[0].redirect_uri;
 
   if (!redirectURI) {
     return res.json(400, {
@@ -115,11 +124,13 @@ router.post('/token', (req, res, next) => {
   (2) verify authorization code (exists, has not expired, has not been consumed)
   (3) verify the client application
   (4) respond via JSON with the access token, the refresh token (optional), and how long the token is good for
+
   curl -X POST http://localhost:3001/auth/token \
     -H "Content-Type: application/json" \
     -d '{ "code": "101ea311-7e9a-404a-8988-891aec3d22e8" }'
   */
   const payload = req.body;
+
   const authorizationCodeObj = authorizationCodeList.filter((authCodes) => {
     return authCodes.code === payload.code;
   })[0];
@@ -151,11 +162,51 @@ router.post('/token', (req, res, next) => {
     });
   }
 
-  const accessToken = generateAccessToken(userObj.client, userObj.id);
+  // TODO: don't hard-code the subject or audience
+  const options = {
+    issuer: 'http://localhost:3001',
+    subject: '1',
+    audience: '1',
+    expiresIn: '2 hours',
+  };
+  const accessToken = jwt.sign({ foo: 'bar' }, SECRET_KEY, options);
+
+  // const accessToken = generateAccessToken(userObj.client, userObj.id);
+
+  // TODO: add to db instead
   accessTokenList.push(accessToken);
 
-  return res.json(accessToken);
+  return res.json({ token: accessToken });
 });
 
+router.get('/userinfo', (req, res, next) => {
+
+  /*
+    (1) grab token from the header
+    (2) validate token
+    (3) send back appropriate response
+  */
+
+  console.log('gjgjgjjgjgjg')
+
+  console.log(req.headers)
+
+  const token = req.headers.authorization.split(' ')[1];
+
+  jwt.verify(token, SECRET_KEY, (err, decoded) => {
+
+    if (err) {
+      return res.json(400, {
+        error: 1,
+        msg: 'Invalid token.',
+      });
+    }
+    console.log(decoded)
+    return res.json({
+      user: decoded.id,
+    });
+  });
+
+});
 
 module.exports = router;
