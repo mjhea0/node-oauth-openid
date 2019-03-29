@@ -1,0 +1,12 @@
+{% extends "_base.html" %}
+
+{% block content %}
+  <h2>You are are authorized and authenticated!</h2>
+
+  <hr><br>
+
+  <form action="/user" method="post">
+    <input type="submit" value="Access Restricted Resource" class="btn btn-success">
+  </form>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+{
+  "name": "node-oauth-server",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node app.js",
+    "lint": "eslint ."
+  },
+  "author": "Michael Herman",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.4",
+    "express": "^4.16.4",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.24.0",
+    "morgan": "^1.9.1",
+    "nunjucks": "^3.2.0",
+    "request": "^2.88.0",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "eslint": "^5.15.3",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.16.0"
+  }
+}

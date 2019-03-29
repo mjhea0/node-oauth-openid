@@ -1,0 +1,18 @@
+{% extends "_base.html" %}
+
+{% block content %}
+  <h1>Authorize?</h1>
+
+  <hr><br>
+
+  <form action="/oauth/authorize/dialog" method="post">
+    <input type="submit" name="validate" value="Yes" class="btn btn-primary"/>
+  </form>
+
+  <br>
+
+  <form action="/oauth/authorize/dialog" method="post">
+    <input type="submit" name="validate" value="No" class="btn btn-success"/>
+  </form>
+
+{% endblock %}

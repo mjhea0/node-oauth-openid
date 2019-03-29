@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'static')));
 
 app.use('/', indexRouter);
-app.use('/auth', authRouter);
+app.use('/oauth', authRouter);
 
 app.listen(port, () => {
   // eslint-disable-next-line no-console

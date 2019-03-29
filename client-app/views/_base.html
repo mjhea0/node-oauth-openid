@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% block head %}
+      <link rel="stylesheet" href="/bootstrap.min.css"/>
+      <link rel="stylesheet" href="/main.css"/>
+      <title>
+        {% block title %}{% endblock %}Node + OAuth2 + OpenID Connect - Client App</title>
+    {% endblock %}
+  </head>
+  <body>
+    <div id="content" class="container">
+      <div class="row">
+        <div class="col-md-6">
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+    </div>
+    </div>
+  </body>
+</html>
